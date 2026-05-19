@@ -31,6 +31,13 @@ app.include_router(audience.router, prefix="/api/audience", tags=["audience"])
 app.include_router(reports.router, prefix="/api/reports", tags=["reports"])
 app.include_router(import_csv.router, prefix="/api/import", tags=["import"])
 
+@app.post("/api/auth/login")
+def login(request):
+    # 验证用户名密码逻辑
+    return {"token": "xxx"}
+
+
 @app.get("/api/health")
 def health_check():
     return {"status": "ok"}
+    
