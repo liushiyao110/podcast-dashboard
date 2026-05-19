@@ -1,0 +1,38 @@
+import { useState, useEffect } from 'react'
+import api from '../utils/api'
+
+interface User {
+  username: string
+  role: string
+}
+
+export function useAuth() {
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      setLoading(false)
+      return
+    }
+    api.get('/auth/me')
+      .then((res) => setUser(res.data))
+      .catch(() => localStorage.removeItem('token'))
+      .finally(() => setLoading(false))
+  }, [])
+
+  const login = async (username: string, password: string) => {
+    const res = await api.post('/auth/login', { username, password })
+    localStorage.setItem('token', res.data.access_token)
+    setUser({ username: res.data.username, role: res.data.role })
+    return res.data
+  }
+
+  const logout = () => {
+    localStorage.removeItem('token')
+    setUser(null)
+  }
+
+  return { user, loading, login, logout }
+}
